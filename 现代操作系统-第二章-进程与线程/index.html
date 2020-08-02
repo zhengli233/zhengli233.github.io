@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 4.2.1" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>现代操作系统 第二章 进程与线程 - 猴调博客</title>
+
+
+    <meta name="description" content="进程进程的概念进程是操作系统提供的最古老也是最终要的抽象概念之一, 即使可以使用的cpu只有一个, 它们也具有支持(伪)并发操作的能力.现代计算机经常会在同一时间做许多事情, 比如编辑文档时接收邮件, 又比如上网课时偷偷打游戏:). 然而cpu在同一时间只能运行一个进程, 那些看似并行的行为, 其实只是cpu在快速地从一个进程切换到另一个进程, 使每个进程各运行几十或几百毫秒, 让我们产生并行的错">
+<meta property="og:type" content="article">
+<meta property="og:title" content="现代操作系统 第二章 进程与线程">
+<meta property="og:url" content="https://blog.houtiao.club/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%AC%E4%BA%8C%E7%AB%A0-%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/index.html">
+<meta property="og:site_name" content="猴调博客">
+<meta property="og:description" content="进程进程的概念进程是操作系统提供的最古老也是最终要的抽象概念之一, 即使可以使用的cpu只有一个, 它们也具有支持(伪)并发操作的能力.现代计算机经常会在同一时间做许多事情, 比如编辑文档时接收邮件, 又比如上网课时偷偷打游戏:). 然而cpu在同一时间只能运行一个进程, 那些看似并行的行为, 其实只是cpu在快速地从一个进程切换到另一个进程, 使每个进程各运行几十或几百毫秒, 让我们产生并行的错">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.houtiao.club/images/og_image.png">
+<meta property="article:published_time" content="2020-05-26T07:47:13.000Z">
+<meta property="article:modified_time" content="2020-08-02T07:44:37.001Z">
+<meta property="article:author" content="zhengli233">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.houtiao.club/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.svg">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-156168277-2"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-156168277-2');
+</script>
+
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.svg" alt="现代操作系统 第二章 进程与线程" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">Home</a>
+                
+                <a class="navbar-item"
+                href="/archives">Archives</a>
+                
+                <a class="navbar-item"
+                href="/categories">Categories</a>
+                
+                <a class="navbar-item"
+                href="/tags">Tags</a>
+                
+                <a class="navbar-item"
+                href="/about">About</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    <a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                <a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-05-26T07:47:13.000Z">2020-05-26</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    1 小时 读完 (大约 8116 个字)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                现代操作系统 第二章 进程与线程
+            
+        </h1>
+        <div class="content">
+            <h2 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h2><p><strong>进程的概念</strong><br>进程是操作系统提供的最古老也是最终要的抽象概念之一, 即使可以使用的cpu只有一个, 它们也具有支持(伪)并发操作的能力.<br>现代计算机经常会在同一时间做许多事情, 比如编辑文档时接收邮件, 又比如上网课时偷偷打游戏:). 然而cpu在同一时间只能运行一个进程, 那些看似并行的行为, 其实只是cpu在快速地从一个进程切换到另一个进程, 使每个进程各运行几十或几百毫秒, 让我们产生并行的错觉. 这种快速的切换称作多道程序设计.<br><img src="/images/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E5%A4%9A%E9%81%93%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1.png" alt=""></p>
+<a id="more"></a>
+<p>需要注意的是, 因为进程的执行会被cpu来回切换, 因此在写程序时, 我们不能去假设某条语句的运行时间.<br>进程和程序之间的关系在我看来类似容器和内容的关系. 进程提供给了程序运行所需要的内存资源和运算资源, 程序规定了这些资源应该如何使用.</p>
+<p><strong>进程的创建</strong><br>4种主要事件会导致进程的创建:</p>
+<ol>
+<li>系统初始化</li>
+<li>正在运行的程序执行了创建进程的系统调用</li>
+<li>用户请求创建一个新的进程</li>
+<li>一个批处理作业的初始化</li>
+</ol>
+<p>在UNIX系统中, 只有一个系统调用来创建新进程: fork. 这个系统调用会创建一个与调用进程相同的副本. 在调用之后, 父进程和子进程拥有相同的内存映像,同样的环境字符串和同样的打开文件. 通常, 子进程接着执行execve或一个类似的系统调用, 以修改其内存映像并运行一个新的程序.<br>在Windows中, 一个Win32函数调用CreateProcess既处理进程的创建, 也负责把正确的程序装入新的进程. </p>
+<p>无论哪种系统中, 进程创建后, 父进程和子进程拥有不用的地址空间. 因此进程修改在其地址空间中的字对其他进程是不可见的. 某些UNIX的实现可以让只读内存在进程间共享, 但可写内存一定是不共享的.</p>
+<p><strong>进程的终止</strong><br>进程的终止通常由下列条件引起:</p>
+<ol>
+<li>正常退出(自愿)</li>
+<li>出错退出(自愿)</li>
+<li>严重错误(非自愿)</li>
+<li>被其他进程杀死(非自愿)</li>
+</ol>
+<p>当进程完成了它的工作, 会执行一个系统调用通知系统. 在UNIX中该调用是exit, Windows中是ExitProcess.<br>杀死进程的调用在UNIX中是kill, 在Windows中是TerminateProcess.</p>
+<p><strong>进程的层次结构</strong><br>UNIX在初始化时, 一个称为init的特殊进程出现在启动映像中, 它读入一个说明终端数量的文件, 接着为每个终端创建一个新进程, 这些进程等待用户登录, 用户登录成功后, 就会执行一个shell准备接收命令, 从shell再去启动更多的进程. 因此, 这个系统中, 所有进程都是属于以init为根的一棵进程树.<br>Winodws中没有进程层次的概念, 所有进程都是地位相同的.</p>
+<p><strong>进程状态</strong></p>
+<p><img src="/images/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E8%BF%9B%E7%A8%8B%E7%8A%B6%E6%80%81.png" alt=""></p>
+<p>进程的三种状态分别是:</p>
+<ol>
+<li>运行态(该时刻进程实际占用cpu)</li>
+<li>就绪态(可运行, 但cpu正在被其他进程占用)</li>
+<li>阻塞态(除非某种外部事件发生, 否则进程不能运行)</li>
+</ol>
+<p>进程处在运行态还是就绪态是由调度程序决定的, 它是操作系统的一部分, 之后会详细讨论.<br>阻塞态是因为进程调用了诸如pause等系统调用或等待外部输入时而进入的.</p>
+<p><strong>进程的实现</strong></p>
+<p><img src="/images/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E8%BF%9B%E7%A8%8B%E8%A1%A8%E9%A1%B9%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E5%AD%97%E6%AE%B5.png" alt=""></p>
+<p>为了实现进程模型, 操作系统维护这一张表格, 即进程表, 每个进程占用一个进程表项. 为了能实现多个进程的切换, 进程表项中需要保存切换所需要的信息, 如上图所示.</p>
+<h2 id="线程"><a href="#线程" class="headerlink" title="线程"></a>线程</h2><p>线程相当于一个轻量的进程, 它也可以并行运行, 但不同的是, 线程之间共享地址空间.<br>我们使用线程有以下若干理由:</p>
+<ol>
+<li>许多应用场景会同时发生着多种活动, 引入线程会使我们的程序设计更加简单</li>
+<li>线程比进程更轻, 在许多系统中, 创建一个线程比创建一个进程要快10~100倍</li>
+<li>在存在大量计算和io的程序中, 使用线程能提高程序执行的速度</li>
+<li>在多cpu系统中, 真正的并行有了实现的可能, 因此使用线程是有益的</li>
+</ol>
+<p><strong>经典的线程模型</strong><br>理解进程的一个角度是, 它用某种方法把相关的资源集中在一起. 进程拥有存放程序正文和数据以及其他资源的地址空间. 进程拥有一个执行的线程, 该线程中有: 一个程序计数器, 用来记录接着要执行哪一条指令; 若干寄存器, 用来保存变量; 一个堆栈, 用来记录执行历史(原文如此, 但我并不清楚什么叫执行历史, 通常堆栈保存的还是程序的数据).<br>总的来说, 进程用于把资源集中到一起, 而线程则是在cpu上被调度执行的实体.<br>线程给进程模型增加了一项内容, 即在同一个进程环境中, 允许彼此之间有较大独立性的多个线程执行. 在同一个计算机上并行运行的多个进程, 共享计算机的内存, 磁盘等资源, 而同一进程中的多个线程, 共享进程的地址空间和其他资源. 因此, 当我们的应用需要并行执行的时候, 尤其是并行任务需要数据交互的时候, 选择多线程是非常合适的.</p>
+<p><img src="/images/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E8%BF%9B%E7%A8%8B%E5%92%8C%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E5%86%85%E5%AE%B9.png" alt=""></p>
+<p>创建和退出线程与进程差不多, 但有2点是不同的:</p>
+<ol>
+<li>线程之间是平等的, 即使一个线程是由另一个线程创建出来的, 它们之间也不能认为是父子关系, 因为不会因为创建线程的退出而导致被创建的线程也退出</li>
+<li>线程可以通过yield调用主动放弃cpu而让另一个线程运行. 进程不会这样做, 因为进程之间是竞争关系. 而线程这样做是因为它和其他线程是合作关系, 它们都是由程序设计者设计出来完成同一目标的. 通常线程的yield是为了等待其他线程完成某些任务.</li>
+</ol>
+<p><strong>在用户空间中实现线程</strong></p>
+<p><img src="/images/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E7%94%A8%E6%88%B7%E7%BA%A7%E5%92%8C%E5%86%85%E6%A0%B8%E7%BA%A7%E7%BA%BF%E7%A8%8B.png" alt=""></p>
+<p>好处:</p>
+<ol>
+<li>调度线程只需要在本地完成, 不需要陷入内核, 效率高</li>
+<li>允许每个进程有自己定制的调度算法<br>缺点:</li>
+<li>不容易实现系统级阻塞, 比如让线程读取键盘输入, 如果让线程实际进行该系统调用就会停止所有线程</li>
+<li>不容易处理页面故障. 所谓页面故障就是当程序不是一次性全部加载到内存中而在程序执行过程中跳转到了不在内存上的指令, 此时操作系统会去磁盘上找到这条指令(和它的邻居们)并加载到内存上. 因为内核感知不到用户级线程, 所以当某个线程触发页面故障时, 会导致整个进程被阻塞, 但实际上其他线程是可以运行的</li>
+<li>在一个单独的进程内部, 没有时钟中断, 所以不能使用轮转调度的方式调度线程</li>
+</ol>
+<p><strong>在内核中实现线程</strong><br>好处和坏处与上面反一下.</p>
+<p><strong>混合实现</strong><br>编程人员决定使用内核线程还是用户线程, 内核只识别内核级线程, 并对其进行调度, 其中一些内核级线程会被多个用户级线程多路复用(这个描述就很模糊, 不明白)</p>
+<p><strong>调度程序激活机制</strong><br>听起来很拗口, 而且原文篇幅不少, 但总结起来就是, 内核去调用用户级的运行时系统(这个系统是用来调度线程的). 当线程触发了某些系统阻塞(上面介绍过的键盘输入和页面故障)后, 由内核去通知用户级的调度系统挂起该线程, 当阻塞过去, 也由内核去通知用户级的调度系统之前那个线程可以跑了. 当然, 如果线程没有引起系统阻塞, 那就跟用户级线程一样.<br>好处显而易见, 坏处就是违反了分层次系统内在结构的概念, 简单说就是调用应该是单向的, 一方向另一方提供服务供其调用, 而不能双方互相调用. 听起来无伤大雅, 但其实很伤, 这对整个系统的架构产生了一定的混乱, 不够清晰, 为实现和维护增加了难度.</p>
+<p><strong>弹出式线程</strong><br>这是一种特殊的线程, 使用的典型场景是处理到来的消息. 当消息到达时, 创建一个处理该消息的线程, 因为它总是全新的, 因此可以为它优化创建过程, 使它能快速创建, 并能在内核中立即执行. 当然, 这么做的代价就是, 如果它出错会比用户级线程造成更大的损害.</p>
+<p><strong>使单线程代码多线程化</strong><br>除了要考虑读写问题外, 这一节还提醒我们有些库就不是为多线程设计的, 即线程不安全, 通常来说文档里都会写.<br>以我的经验来说, 我更多的会去考虑多线程化的目的, 通过目的来决定需不需要多线程化, 和怎么去多线程化.<br>首先, 有2中典型的需要多线程的情景:</p>
+<ol>
+<li>执行某些阻塞调用, 如等待信号, 执行时间很长的计算等, 如果还有其他任务不能接受被阻塞, 如GUI界面, 那么这些调用应该被放到别的线程中</li>
+<li>充分利用多核cpu来进行并行计算. 这里需要考虑的就是如何充分利用可用的核使计算时间最短. 显然无限多的线程不能带来无限短的计算时间, 计算过程本身也不一定能够如此完全的并行, 总有必须顺序执行的部分. 一般来说, 把可以并行的计算拆分到与核数一致或少于核数的线程中, 每个线程的计算过程相同, 只是数据不同. 当然, 如果每个线程的计算很少, 那就宁愿少用一些线程甚至不用多线程, 因为线程的创建和退出也是有开销的.</li>
+</ol>
+<hr>
+<h2 id="进程间通信"><a href="#进程间通信" class="headerlink" title="进程间通信"></a>进程间通信</h2><p>有3个关于进程间通讯的问题:</p>
+<ol>
+<li>进程如何把信息传递给另一个进程</li>
+<li>如何保证进程间的操作不会打架</li>
+<li>如何在需要时保证进程的执行顺序</li>
+</ol>
+<p>对于第一个问题, 线程天然就解决了, 因为线程间共享地址空间. 第二和第三个问题在线程中也存在, 之后对于进程的问题讨论也同样适用于线程.</p>
+<h3 id="消息传递"><a href="#消息传递" class="headerlink" title="消息传递"></a>消息传递</h3><p>首先解决第一个问题.<br>通过我查询的一些资料, 至少有以下几种手段可以实现进程间的消息传递:</p>
+<ol>
+<li>本地TCP通信:<br>很好理解, 两个进程一个做服务端, 一个做客户端, 握手后在本地同一个端口收发信息就行了.</li>
+<li>管道:<br>管道在UNIX中使用得非常普遍. 比如找到所有java进程<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef | grep java</span><br></pre></td></tr></table></figure>
+<code>|</code>之前的<code>ps -ef</code>列出了所有进程信息, 之后的<code>grep java</code>是选择出含有java的信息. 前者的输出作为了后者的输入, 是典型的进程间通信.</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> fd[<span class="number">2</span>];  <span class="comment">// 两个文件描述符</span></span><br><span class="line">    <span class="keyword">pid_t</span> pid;</span><br><span class="line">    <span class="keyword">char</span> buff[<span class="number">20</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(pipe(fd) &lt; <span class="number">0</span>)  <span class="comment">// 创建管道</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Create Pipe Error!\n"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>((pid = fork()) &lt; <span class="number">0</span>)  <span class="comment">// 创建子进程</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Fork Error!\n"</span>);</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(pid &gt; <span class="number">0</span>)  <span class="comment">// 父进程</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">close</span>(fd[<span class="number">0</span>]); <span class="comment">// 关闭读端</span></span><br><span class="line">        <span class="built_in">write</span>(fd[<span class="number">1</span>], <span class="string">"hello world\n"</span>, <span class="number">12</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">close</span>(fd[<span class="number">1</span>]); <span class="comment">// 关闭写端</span></span><br><span class="line">        <span class="built_in">read</span>(fd[<span class="number">0</span>], buff, <span class="number">20</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%s"</span>, buff);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个是用c代码实现父子进程用管道通信<br>3. 消息队列:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/msg.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 用于创建一个唯一的key</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MSG_FILE <span class="meta-string">"/etc/passwd"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 消息结构</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">msg_form</span> &#123;</span></span><br><span class="line">    <span class="keyword">long</span> mtype;</span><br><span class="line">    <span class="keyword">char</span> mtext[<span class="number">256</span>];</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> msqid;</span><br><span class="line">    <span class="keyword">key_t</span> key;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">msg_form</span> <span class="title">msg</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取key值</span></span><br><span class="line">    <span class="keyword">if</span>((key = ftok(MSG_FILE,<span class="string">'z'</span>)) &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">"ftok error"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 打印key值</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Message Queue - Server key is: %d.\n"</span>, key);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建消息队列</span></span><br><span class="line">    <span class="keyword">if</span> ((msqid = msgget(key, IPC_CREAT|<span class="number">0777</span>)) == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">"msgget error"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 打印消息队列ID及进程ID</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"My msqid is: %d.\n"</span>, msqid);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"My pid is: %d.\n"</span>, getpid());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 循环读取消息</span></span><br><span class="line">    <span class="keyword">for</span>(;;)</span><br><span class="line">    &#123;</span><br><span class="line">        msgrcv(msqid, &amp;msg, <span class="number">256</span>, <span class="number">888</span>, <span class="number">0</span>);<span class="comment">// 返回类型为888的第一个消息</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Server: receive msg.mtext is: %s.\n"</span>, msg.mtext);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Server: receive msg.mtype is: %d.\n"</span>, msg.mtype);</span><br><span class="line"></span><br><span class="line">        msg.mtype = <span class="number">999</span>; <span class="comment">// 客户端接收的消息类型</span></span><br><span class="line">        <span class="built_in">sprintf</span>(msg.mtext, <span class="string">"hello, I'm server %d"</span>, getpid());</span><br><span class="line">        msgsnd(msqid, &amp;msg, <span class="keyword">sizeof</span>(msg.mtext), <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中主要就是</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/msg.h&gt;</span></span></span><br><span class="line"><span class="comment">// 创建或打开消息队列：成功返回队列ID，失败返回-1</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">msgget</span><span class="params">(<span class="keyword">key_t</span> key, <span class="keyword">int</span> flag)</span></span>;</span><br><span class="line"><span class="comment">// 添加消息：成功返回0，失败返回-1</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">msgsnd</span><span class="params">(<span class="keyword">int</span> msqid, <span class="keyword">const</span> <span class="keyword">void</span> *ptr, <span class="keyword">size_t</span> <span class="built_in">size</span>, <span class="keyword">int</span> flag)</span></span>;</span><br><span class="line"><span class="comment">// 读取消息：成功返回消息数据的长度，失败返回-1</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">msgrcv</span><span class="params">(<span class="keyword">int</span> msqid, <span class="keyword">void</span> *ptr, <span class="keyword">size_t</span> <span class="built_in">size</span>, <span class="keyword">long</span> type,<span class="keyword">int</span> flag)</span></span>;</span><br><span class="line"><span class="comment">// 控制消息队列：成功返回0，失败返回-1</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">msgctl</span><span class="params">(<span class="keyword">int</span> msqid, <span class="keyword">int</span> cmd, struct msqid_ds *buf)</span></span>;</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>共享内存:<br>系统提供的可以供多个进程读写的内存, 也很好理解, 不同的系统实现和接口不一样, 但思想是一样的, 用关键字来区分和访问不同的内存块. </li>
+</ol>
+<h3 id="竞争"><a href="#竞争" class="headerlink" title="竞争"></a>竞争</h3><p>多个进程或线程访问同一块数据, 当时序不能保证时, 一定会带来读写问题, 即一个在读或者写, 但还没读写完, 就被另一个写了, 导致出错.<br>对于这块数据, 我们称之为临界区. 为了避免发生临界区的竞争, 同时保证使用共享数据的并发进程能够正确和高效地进行协作, 我们的解决方案需要满足一下4个条件:</p>
+<ol>
+<li>任何两个进程不能同时处于其临界区</li>
+<li>不应对cpu的速度和数量做任何假设</li>
+<li>临界区外运行的进程不得阻塞其他进程</li>
+<li>不得使进程无限期等待进入临界区</li>
+</ol>
+<p><img src="/images/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E4%B8%B4%E7%95%8C%E5%8C%BA.png" alt=""></p>
+<p><strong>忙等待的互斥</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FALSE   0</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> TRUE    1</span></span><br><span class="line"><span class="meta">#deinfe N       2</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> <span class="built_in">turn</span>;</span><br><span class="line"><span class="keyword">int</span> interested[N];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">enter_region</span><span class="params">(<span class="keyword">int</span> <span class="built_in">process</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> other;</span><br><span class="line">    other = <span class="number">1</span> - <span class="built_in">process</span>;</span><br><span class="line">    interested[<span class="built_in">process</span>] = TRUE;</span><br><span class="line">    <span class="built_in">turn</span> = <span class="built_in">process</span>;</span><br><span class="line">    <span class="keyword">while</span> (<span class="built_in">turn</span> == <span class="built_in">process</span> &amp;&amp; interested[other] == TRUE);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">leave_region</span><span class="params">(<span class="keyword">int</span> <span class="built_in">process</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    interested[<span class="built_in">process</span>] = FALSE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上是1981年 G. L. Peterson发现的互斥解法. 可以看到, 在进入临界区时, 如果另一个进程正在使用这个临界区, 那么就会一直陷入<code>while (turn == process &amp;&amp; interested[other] == TRUE)</code>循环, 这就是忙等待.<br>虽然它可以保证不会有超过1个进程进入临界区, 但是这个<code>while</code>循环浪费了cpu的资源, 并不是我们钟意的解法.</p>
+<p><strong>睡眠与唤醒</strong><br><code>sleep</code>和<code>weakup</code>是两个系统调用, 前者将进程挂起, 后者将挂起的进程唤醒使之可以继续执行.<br>以生产者-消费者模型为例:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> N 100</span></span><br><span class="line"><span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">producer</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> item;</span><br><span class="line">    <span class="keyword">while</span> (TRUE)</span><br><span class="line">    &#123;</span><br><span class="line">        item = produce_item();</span><br><span class="line">        <span class="keyword">if</span> (count == N) sleep();</span><br><span class="line">        insert_item(item);</span><br><span class="line">        count = count + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (count == <span class="number">1</span>) wakeup(consumer);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">consumer</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> item;</span><br><span class="line">    <span class="keyword">while</span> (TRUE)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (count == <span class="number">0</span>) sleep();</span><br><span class="line">        item = remove_item();</span><br><span class="line">        count = count - <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (count == N - <span class="number">1</span>) wakeup(producer);</span><br><span class="line">        consume_item(item);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>缓冲区满了后, 调用sleep挂起生产者进程, 当缓冲区从空加入新数据, 唤醒消费者进程, 而消费者进程在缓冲区为空时挂起自己, 在缓冲区从满到不满时唤醒消费者进程.<br>但它仍有问题, 就是<code>count</code>这个变量. 它仍有可能在不恰当的时机被修改导致生产者进程和消费者进程都休眠而无法唤醒. 例如在消费者进程检测到<code>count</code>为0时, 即将挂起自己, 但此时生产者将<code>count</code>修改为1, 并去唤醒消费者, 因为消费者本身就没有被挂起, 因此该唤醒被忽略, 但此时消费者仍然执行了<code>sleep</code>, 于是消费者永远被挂起, 生产者在写满缓冲区后也永远被挂起了.<br>即使我们修改上面的代码, 在<code>count</code>不为0时就尝试去唤醒消费者, 在<code>count</code>小于<code>N</code>时就去唤醒生产者, 也不能正真解决这个问题, 因为只要<code>count</code>这个变量能够在任意时刻被修改, 就会遇到在消费者<code>sleep</code>之前耗尽缓冲区而不再发出<code>wakeup</code>调用的情况.<br>所以, 我们需要保证, <code>count</code>的检测和<code>sleep</code>, <code>wakeup</code>之间是不可分割的. 这样就引入了下一节:</p>
+<p><strong>信号量</strong><br>1965年E. W. Dijkstra提出信号量, 它使用一个整形变量来累计唤醒次数. 一个信号量的值可以为0(表示没有保存下来的唤醒操作)或为正值(表示有一个或多个唤醒操作).<br>Dijkstra建议设立两种操作: <code>down</code>和<code>up</code>.<br>对一信号量执行<code>down</code>操作, 会检查其值是否大于0, 若大于0, 则将其减1; 若等于0, 则将进程挂起(有点像引用计数), 并在重新唤醒后再进行减1操作.<br>对一信号量执行<code>up</code>操作, 会使其值加1. 如果1个或多个进程在该信号量上睡眠, 则由系统选择一个唤醒, 唤醒的进程会继续完成down操作.</p>
+<p><strong>互斥量</strong><br>如果不需要信号量的计数能力, 可以使用一个简化版本, 互斥量(mutex).<br>互斥量是一个可以处于两种状态之一的变量: unlocked和locked. 典型的使用场景是当进程需要访问临界区时, 调用<code>mutex_lock</code>, 如果该互斥量是unlocked, 则对其加锁, 并进入临界区, 如果该互斥量是locked, 则进程被阻塞, 直到有进程调用<code>mutex_unlock</code>, 此时若有多个进程被该互斥量阻塞, 则随机选择一个进程唤醒, 并加锁.<br>下面我们来看一下用pthread库中的互斥量来实现生产者消费者模型:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAX 1000000000</span></span><br><span class="line"><span class="keyword">pthread_mutex_t</span> the_mutex;</span><br><span class="line"><span class="keyword">pthread_cond_t</span> condc, condp;</span><br><span class="line"><span class="keyword">int</span> <span class="built_in">buffer</span> = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">producer</span><span class="params">(<span class="keyword">void</span> *ptr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= MAX; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        pthread_mutex_lock(&amp;the_mutex);</span><br><span class="line">        <span class="keyword">while</span> (<span class="built_in">buffer</span> != <span class="number">0</span>) pthread_cond_wait(&amp;conp, &amp;the_mutex);</span><br><span class="line">        <span class="built_in">buffer</span> = i;</span><br><span class="line">        pthread_cond_signal(&amp;condc);</span><br><span class="line">        pthread_mutex_unlock(&amp;the_mutex);</span><br><span class="line">    &#125;</span><br><span class="line">    pthread_exit(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">consumer</span><span class="params">(<span class="keyword">void</span> *ptr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; MAX; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        pthread_mutex_lock(&amp;the_mutex);</span><br><span class="line">        <span class="keyword">while</span> (<span class="built_in">buffer</span> == <span class="number">0</span>) pthread_cond_wait(&amp;condc, &amp;the_mutex);</span><br><span class="line">        <span class="built_in">buffer</span> = <span class="number">0</span>;</span><br><span class="line">        pthread_cond_signal(&amp;condp);</span><br><span class="line">        pthread_mutex_unlock(&amp;the_mutex);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">pthread_t</span> pro, con;</span><br><span class="line">    pthread_mutex_init(&amp;the_mutex, <span class="number">0</span>);</span><br><span class="line">    pthread_cond_init(&amp;condc, <span class="number">0</span>);</span><br><span class="line">    pthread_cond_init(&amp;condp, <span class="number">0</span>);</span><br><span class="line">    pthread_create(&amp;con, <span class="number">0</span>, consumer, <span class="number">0</span>);</span><br><span class="line">    pthread_create(&amp;pro, <span class="number">0</span>, producer, <span class="number">0</span>);</span><br><span class="line">    pthread_join(pro, <span class="number">0</span>);</span><br><span class="line">    pthread_join(con, <span class="number">0</span>);</span><br><span class="line">    pthread_cond_destroy(&amp;condc);</span><br><span class="line">    pthread_cond_destroy(&amp;condp);</span><br><span class="line">    pthread_mutex_destroy(&amp;the_mutex);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>pthread_cond_wait</code>会让当前线程阻塞并解锁互斥量, 而<code>pthread_cond_signal</code>则会唤醒前者并让前者的互斥量加锁.<br>至此, 我们的生产者-消费者模型终于能用了.</p>
+<p><strong>管程</strong><br>管程(monitor)是一个语言概念, 它保证在管程中的一段代码在同一时间只能有1个活跃进程, 这是由编译器保证的.</p>
+<p><img src="/images/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E7%AE%A1%E7%A8%8B.png" alt=""></p>
+<p>然而c语言并不支持管程, 我也不清楚哪种语言有这个特性, 所以就不详细介绍了.</p>
+<p><strong>屏障</strong><br>屏障(barrier)是进程组用来同步的机制.</p>
+<p><img src="/images/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E5%B1%8F%E9%9A%9C.png" alt=""></p>
+<p>这个在并行计算中使用得非常普遍, CUDA中也有这个概念. 比如我们要进行2次矩阵乘法运算, 我们将矩阵乘法拆分成一个进程或线程计算一行和一列的点乘. 那么我们就需要在第一次乘法和第二次乘法之间设置一个屏障, 当第一次乘法的所有进程或线程计算完毕后才能再开始第二次乘法运算, 如果不这么做, 第二次计算就会使用错误的值.</p>
+<p><strong>避免锁</strong><br>虽然锁给我们在多进程和线程合作中带来的方便, 但我们也要知道, 使用锁是有代价的. 为了性能, 我们应该尽量避免使用锁.<br>有时候, 我们在读数据的时候, 并不在意当前读到的值是否是最新的, 只要是正确和完整的值就能接受. 比如周期备份的日志, 也许正在有一条新的日志写进来, 但这一次的备份没必要去等它, 因为它在下个周期时总能被备份. 但尽管不需要等它, 我们在备份时, 不能保存一条写了一半的日志. 在这种情况下, 我们可以使用读-复制-更新(Read-Copy-Update, RCU)的方法.</p>
+<p><img src="/images/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E8%AF%BB-%E5%A4%8D%E5%88%B6-%E6%9B%B4%E6%96%B0.png" alt=""></p>
+<p>写日志的进程在写完一条数据之前不会修改备份进程读到的数据, 直到写完一条, 将其更新到实际日志中, 这个更新操作是原子的, 这比使用锁的代价小多了.</p>
+<h2 id="调度"><a href="#调度" class="headerlink" title="调度"></a>调度</h2><p>当2个或更多的进程处于就绪状态时, 我们就需要选择下一个要运行的进程, 完成选择工作的这一部分称为调度程序(scheduler), 该程序使用的算法称为调度算法.</p>
+<p><strong>进程行为</strong><br>有些进程花费了绝大多数时间在计算上, 有些则在等待I/O上, 前者我们称为计算密集型, 后者称为I/O密集型. </p>
+<p><img src="/images/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E8%BF%9B%E7%A8%8B%E8%A1%8C%E4%B8%BA.png" alt=""></p>
+<p>有必要指出, 随着cpu变得越来越快, 更多的进程倾向为I/O密集型, 这是因为cpu的改进比磁盘改进快的多, 这导致未来对I/O密集型进程的调度处理似乎更为重要. 基本原则是, 如果需要运行I/O密集型进程, 那么就应该让它尽快得到机会, 以便发出磁盘请求并保持磁盘始终忙碌.</p>
+<p><strong>何时调度</strong><br>有关进程调度处理的一个关键问题是何时进行调度决策, 有以下几种情形:</p>
+<ol>
+<li>在创建一个新进程后</li>
+<li>在一个进程退出后</li>
+<li>当一个进程阻塞时</li>
+<li>当一个I/O中断发生时<br>前3个比较好理解, 这里说明一下第4个. I/O中断发生在I/O设备完成工作时, 此时被阻塞的等待该I/O的进程从阻塞变为了就绪, 那么调度程序就要决定是继续阻塞这个进程还是挂起当前线程唤醒这个阻塞的进程.</li>
+</ol>
+<p><strong>调度算法分类</strong></p>
+<ol>
+<li>非抢占式:<br>一个进程会一直运行到它自己退出或被阻塞, 即使它运行了若干小时, 也不会被强迫挂起, 在一个进程退出或被阻塞时, 通常按照优先级在进程队列里选择优先级最高的进程运行</li>
+<li>抢占式:<br>每个进程只能运行一小段固定时间(时间片), 如果该时间结束时进程还在运行, 则该进程会被挂起, 调度程序会挑选另一个进程运行. 这么做的前提是时钟中断发生在时间片结尾. 如果没有时钟, 那么就只能使用非抢占式的方法了.</li>
+</ol>
+<p>对不同的环境需要使用不同的调度算法. 我们大致把环境分为3种:</p>
+<ol>
+<li>批处理:<br>批处理系统在商业领域仍广泛应用, 用来处理薪水册, 存货清单, 帐目收入等周期性作业, 它们不会有用户不耐烦地在终端旁等待. 因此, 非抢占式算法, 或对每个进程都有长时间周期的抢占式算法通常都是可接受的. 这个处理方法减少了进程的切换从而改善了性能.</li>
+<li>交互式<br>在交互式用户环境中, 为了避免一个进程霸占cpu, 抢占是必须的, 如服务器和我们日常所用的pc</li>
+<li>实时<br>在有实时限制的系统中, 抢占有时是不需要的, 因为进程了解它们可能会长时间得不到运行, 所以通常很快地完成各自的工作并阻塞. 实时系统通常是专用的, 只运行用来推进现有应用的程序, 这些程序的行为都是可预测的, 因此可以不需要抢占.</li>
+</ol>
+<p><strong>调度算法的目标</strong></p>
+<p><img src="/images/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95%E7%9B%AE%E6%A0%87.png" alt=""></p>
+<p><strong>批处理系统中的调度</strong></p>
+<ol>
+<li>先来先服务(first-come first-served)<br>优点: 易于理解, 便于实现<br>缺点: 未对不同类型的进程进行调度优化, 吞吐量, 周转时间, cpu利用率均不是最优</li>
+<li>最短作业优先(shortest job first):<br>当可以预知进程运行时间时, 优先运行时间最短的进程<br>优点: 当所有作业都可运行的情形下, 周转时间最优<br>缺点: 需要能够预知进程的运行时间. </li>
+<li>最短剩余时间优先(shortest remaining time next)<br>抢占式的最短作业优先, 调度程序总是选择剩余运行时间最短的进程运行<br>优点: 当有新来的短时间进程就绪, 比最短作业优先的方法周转时间更短<br>缺点: 需要能够预知进程的运行时间. </li>
+</ol>
+<p><strong>交互式系统中的调度</strong></p>
+<ol>
+<li><p>轮转调度:<br>每个进程被分配一个时间段, 称为时间片(quantum), 当进程在时间片结束时还未运行完毕, 则强制剥夺cpu并分配给另一个进程.<br>我们知道进程的切换是有代价的, 假设切换进程需要1ms, 而我们的时间片长度为4ms, 则cpu将会有20%的时间浪费在了管理开销上, 这显然是不划算的(想起了苏妈说的MIT的phd给哈佛的mba打工). 但如果时间片设定过长, 则进程的等待时间也会变长, 这将会引起用户的不满, 这也是我们不愿意看到的.<br>所以结论就是, 时间片太短会导致过多的进程切换, 降低了cpu的效率, 而太长的话则又会引起交互请求响应时间变长. 将时间片设为20<del>50ms通常是一个比较合理的折中. (原书似乎是2015年出版的, 这个”20</del>50ms”对于现在来说我也不知道合不合适)</p>
+</li>
+<li><p>优先级调度:</p>
+</li>
+</ol>
+<p><img src="/images/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E4%BC%98%E5%85%88%E7%BA%A7%E8%B0%83%E5%BA%A6.png" alt=""></p>
+<p>图中给出了一个有4类优先级的系统, 它会按照优先级的高低在同级内实行轮转调度, 当优先级高的执行完毕后, 才会轮到优先级低的进程. 显然, 如果不偶尔对优先级进行调整, 低优先级的进程很可能会产生饥饿现象.</p>
+<ol start="3">
+<li><p>多级队列(Compatible Time Sharing System):<br>为了减少进程切换带来的损耗, 多级队列策略在进程被切换后再次执行时分配给该进程较之上次双倍的时间片, 并降低优先级. 这样做可以兼顾响应时间, 为那些运行时间短的进程能够尽快完成.<br>对于那些刚开始运行一段长时间, 而后来又需要交互的进程, 为了防止其永远处于被惩罚状态, 在终端上有回车键按下时, 则属于该终端的所有进程就都被移到最高优先级. 但这样做其实有被滥用的风险, 因为用户有可能会发现, 只要在自己的终端每隔几秒敲一下回车键就可以大大提高响应时间, 如果这个经验被广泛传播出去, 那么这个策略可能就失效了.</p>
+</li>
+<li><p>保证调度:<br>向用户作出明确的性能保证, 比如用户将获得cpu处理能力的1/n.</p>
+</li>
+<li><p>彩票调度:<br>其基本思想是为进程提供各种系统资源(如cpu时间)的彩票. 一旦需要做出一项调度决策时, 就随机抽出一张彩票, 拥有该彩票的进程获得该资源.</p>
+</li>
+</ol>
+<p><strong>实时系统中的调度</strong><br>实时系统是一种时间起着主导作用的系统. 典型地, 一种或多种外部物理设备发给计算机一个服务请求, 而计算机必须在一个确定的时间范围内恰当地做出反映. 例如cd播放器, 病人监护装置, 飞机的自动驾驶系统, 自动化工厂中的机器人控制. 在所有的这些例子中, 正确的但是迟到的应答往往比没有还要糟糕.</p>
+<p>实时系统通常可以分为硬实时和软实时. 前者必须满足绝对的截止时间, 后者对错失截至时间有一定的容忍性.</p>
+<h2 id="经典的IPC问题"><a href="#经典的IPC问题" class="headerlink" title="经典的IPC问题"></a>经典的IPC问题</h2><p><strong>哲学家就餐问题</strong><br>这个问题在1965年由Dijkstra提出(又是他!). 这个问题可以简单地描述如下:<br>5个哲学家围坐在一张圆桌周围, 每个哲学家面前都有一盘通心粉, 需要两把叉子才能进餐, 相邻的2个盘子之间放有1把叉子. 哲学家有2中活动状态: 吃饭和思考. 当哲学家饿了的时候, 他就会试图去取其左边和右边的叉子, 每次拿1把, 但不分次序, 如果拿到了2把, 就可以吃饭. 需要解决的问题是: 能为每一位哲学家写一段描述其行为的程序并保证不会死锁吗?<br><img src="/images/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E5%93%B2%E5%AD%A6%E5%AE%B6%E5%B0%B1%E9%A4%90%E9%97%AE%E9%A2%98.png" alt=""></p>
+<p>从那时起, 每个发明新的同步原语的人都希望通过解决哲学家就餐问题来展示其同步原语的精妙之处.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> N           5</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LEFT        (i+N-1)%N</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> RIGHT       (i+1)%N</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> THINKING    0</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> HUNGRY      1</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> EATING      2</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> semaphore;</span><br><span class="line"><span class="keyword">int</span> state[N];</span><br><span class="line">semaphore mutex = <span class="number">1</span>;</span><br><span class="line">semaphore s[N];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">philosopher</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>)</span><br><span class="line">    &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">take_forks</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    down(&amp;mutex);</span><br><span class="line">    state[i] = HUNGRY;</span><br><span class="line">    test(i);</span><br><span class="line">    up(&amp;mutex);</span><br><span class="line">    down(&amp;s[i]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">put_forks</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    down(&amp;mutex);</span><br><span class="line">    state[i] = THINKING;</span><br><span class="line">    test(LEFT);</span><br><span class="line">    test(RIGHT);</span><br><span class="line">    up(&amp;mutex);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (state[i] == HUNGRY &amp;&amp; </span><br><span class="line">        state[LEFT] != EATING &amp;&amp; </span><br><span class="line">        state[RIGHT] != EATING)</span><br><span class="line">    &#123;</span><br><span class="line">        state[i] = EATING;</span><br><span class="line">        up(&amp;s[i]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上的这段代码是哲学家就餐问题的一种解法, 它保证一个哲学家只有在两个邻居没有进餐时才允许进入到进餐状态.</p>
+<p><strong>读者-写者问题</strong><br>简单来说就是需要实现当一个进程在写的时候不允许其他的读写, 但一个进程在读的时候可以允许其他进程读.<br>这个问题就不给出代码实现了, 很多框架都提供这样的读写锁, 或者直接对自己的数据结构实现了读写锁.</p>
+<hr>
+<p>第二章差不多就是这些了, 内容可真不少, 不过也难怪, 进程和线程是操作系统中非常基础但十分重要的概念.<br>某些编程语言中(如Go)还有协程的概念, 它是完全在用户态中由应用程序自己实现的伪并行. 所以它确实不属于操作系统的范畴.</p>
+<p>之后我可能不会按顺序读下去了, 我会挑选我感兴趣的章节继续记录.</p>
+<p>2020/06/17</p>
+
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/Windows%E4%B8%8BQt%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%B8%B2%E5%8F%A3%E9%80%9A%E4%BF%A1%E7%9A%84/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">Windows下Qt是如何实现串口通信的</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/%E4%BB%8E%E5%85%AC%E7%A5%AD%E6%97%A5%E5%90%84%E5%AE%B6%E8%A1%8C%E4%B8%BA%E7%9C%8B%E8%A8%80%E8%AE%BA%E8%87%AA%E7%94%B1%E5%92%8C%E8%87%AA%E6%88%91%E5%AE%A1%E6%9F%A5/">
+                <span class="level-item">从公祭日各家行为看言论自由和自我审查</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">评论</h3>
+        
+<div id="valine-thread" class="content"></div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js"></script>
+<script>
+    new Valine({
+        el: '#valine-thread' ,
+        notify: false,
+        verify: false,
+        app_id: 'OnRDO7gRhbtbQ5ovEj1BYsX4-gzGzoHsz',
+        app_key: '69CP8k1lxR4mAVQA4MT0ifB2',
+        placeholder: '发一个猴调的评论吧'
+    });
+</script>
+
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/gt_potter.jpg" alt="zhengli233">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        zhengli233
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        Coder
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>Shenzhen China</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <a href="/archives">
+                        <p class="title has-text-weight-normal">
+                            13
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        分类
+                    </p>
+                    <a href="/categories">
+                        <p class="title has-text-weight-normal">
+                            6
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        标签
+                    </p>
+                    <a href="/tags">
+                        <p class="title has-text-weight-normal">
+                            0
+                        </p>
+                    </a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/zhengli233" target="_blank" rel="noopener">
+                关注我</a>
+        </div>
+        
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank" rel="noopener"
+                title="Github" href="https://github.com/zhengli233">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+
+    <div class="card widget" id="toc">
+        <div class="card-content">
+            <div class="menu">
+                <h3 class="menu-label">
+                    目录
+                </h3>
+                <ul class="menu-list"><li>
+        <a class="is-flex" href="#进程">
+        <span class="has-mr-6">1</span>
+        <span>进程</span>
+        </a></li><li>
+        <a class="is-flex" href="#线程">
+        <span class="has-mr-6">2</span>
+        <span>线程</span>
+        </a></li><li>
+        <a class="is-flex" href="#进程间通信">
+        <span class="has-mr-6">3</span>
+        <span>进程间通信</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#消息传递">
+        <span class="has-mr-6">3.1</span>
+        <span>消息传递</span>
+        </a></li><li>
+        <a class="is-flex" href="#竞争">
+        <span class="has-mr-6">3.2</span>
+        <span>竞争</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#调度">
+        <span class="has-mr-6">4</span>
+        <span>调度</span>
+        </a></li><li>
+        <a class="is-flex" href="#经典的IPC问题">
+        <span class="has-mr-6">5</span>
+        <span>经典的IPC问题</span>
+        </a></li></ul>
+            </div>
+        </div>
+    </div>
+
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            链接
+        </h3>
+        <ul class="menu-list">
+        
+            <li>
+                <a class="level is-mobile" href="https://www.houtiao.club/" target="_blank" rel="noopener">
+                    <span class="level-left">
+                        <span class="level-item">猴调网</span>
+                    </span>
+                    <span class="level-right">
+                        <span class="level-item tag">www.houtiao.club</span>
+                    </span>
+                </a>
+            </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                分类
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/C/">
+            <span class="level-start">
+                <span class="level-item">C++</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Git/">
+            <span class="level-start">
+                <span class="level-item">Git</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">
+            <span class="level-start">
+                <span class="level-item">操作系统</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">3</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/%E7%BD%91%E7%BB%9C/">
+            <span class="level-start">
+                <span class="level-item">网络</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">3</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/%E9%97%B2%E8%81%8A/">
+            <span class="level-start">
+                <span class="level-item">闲聊</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">4</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/%E9%B8%A1%E6%B1%A4/">
+            <span class="level-start">
+                <span class="level-item">鸡汤</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+            <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/%E4%BD%BF%E7%94%A8CMake%E6%90%AD%E5%BB%BAC-%E9%A1%B9%E7%9B%AE/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="使用CMake搭建C++项目">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-08-02T08:12:26.000Z">2020-08-02</time></div>
+                    <a href="/%E4%BD%BF%E7%94%A8CMake%E6%90%AD%E5%BB%BAC-%E9%A1%B9%E7%9B%AE/" class="title has-link-black-ter is-size-6 has-text-weight-normal">使用CMake搭建C++项目</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/C/">C++</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/Windows%E4%B8%8BQt%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%B8%B2%E5%8F%A3%E9%80%9A%E4%BF%A1%E7%9A%84/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Windows下Qt是如何实现串口通信的">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-07-13T02:15:39.000Z">2020-07-13</time></div>
+                    <a href="/Windows%E4%B8%8BQt%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%B8%B2%E5%8F%A3%E9%80%9A%E4%BF%A1%E7%9A%84/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Windows下Qt是如何实现串口通信的</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%AC%E4%BA%8C%E7%AB%A0-%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="现代操作系统 第二章 进程与线程">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-05-26T07:47:13.000Z">2020-05-26</time></div>
+                    <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%AC%E4%BA%8C%E7%AB%A0-%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/" class="title has-link-black-ter is-size-6 has-text-weight-normal">现代操作系统 第二章 进程与线程</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/%E4%BB%8E%E5%85%AC%E7%A5%AD%E6%97%A5%E5%90%84%E5%AE%B6%E8%A1%8C%E4%B8%BA%E7%9C%8B%E8%A8%80%E8%AE%BA%E8%87%AA%E7%94%B1%E5%92%8C%E8%87%AA%E6%88%91%E5%AE%A1%E6%9F%A5/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="从公祭日各家行为看言论自由和自我审查">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-04-05T14:31:13.000Z">2020-04-05</time></div>
+                    <a href="/%E4%BB%8E%E5%85%AC%E7%A5%AD%E6%97%A5%E5%90%84%E5%AE%B6%E8%A1%8C%E4%B8%BA%E7%9C%8B%E8%A8%80%E8%AE%BA%E8%87%AA%E7%94%B1%E5%92%8C%E8%87%AA%E6%88%91%E5%AE%A1%E6%9F%A5/" class="title has-link-black-ter is-size-6 has-text-weight-normal">从公祭日各家行为看言论自由和自我审查</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/%E9%97%B2%E8%81%8A/">闲聊</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%20%E7%AC%AC%E4%B8%80%E7%AB%A0%20%E5%BC%95%E8%AE%BA/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="现代操作系统 第一章 引论">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-09T03:38:28.000Z">2020-03-09</time></div>
+                    <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%20%E7%AC%AC%E4%B8%80%E7%AB%A0%20%E5%BC%95%E8%AE%BA/" class="title has-link-black-ter is-size-6 has-text-weight-normal">现代操作系统 第一章 引论</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            归档
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/08/">
+                <span class="level-start">
+                    <span class="level-item">八月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/07/">
+                <span class="level-start">
+                    <span class="level-item">七月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/05/">
+                <span class="level-start">
+                    <span class="level-item">五月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/04/">
+                <span class="level-start">
+                    <span class="level-item">四月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/03/">
+                <span class="level-start">
+                    <span class="level-item">三月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/02/">
+                <span class="level-start">
+                    <span class="level-item">二月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/01/">
+                <span class="level-start">
+                    <span class="level-item">一月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">6</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                标签
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+            </div>
+        </div>
+    </div>
+</div>
+        
+        </div>
+    
+</div>
+
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only has-order-3 column-right ">
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/%E4%BD%BF%E7%94%A8CMake%E6%90%AD%E5%BB%BAC-%E9%A1%B9%E7%9B%AE/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="使用CMake搭建C++项目">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-08-02T08:12:26.000Z">2020-08-02</time></div>
+                    <a href="/%E4%BD%BF%E7%94%A8CMake%E6%90%AD%E5%BB%BAC-%E9%A1%B9%E7%9B%AE/" class="title has-link-black-ter is-size-6 has-text-weight-normal">使用CMake搭建C++项目</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/C/">C++</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/Windows%E4%B8%8BQt%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%B8%B2%E5%8F%A3%E9%80%9A%E4%BF%A1%E7%9A%84/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Windows下Qt是如何实现串口通信的">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-07-13T02:15:39.000Z">2020-07-13</time></div>
+                    <a href="/Windows%E4%B8%8BQt%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%B8%B2%E5%8F%A3%E9%80%9A%E4%BF%A1%E7%9A%84/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Windows下Qt是如何实现串口通信的</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%AC%E4%BA%8C%E7%AB%A0-%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="现代操作系统 第二章 进程与线程">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-05-26T07:47:13.000Z">2020-05-26</time></div>
+                    <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%AC%E4%BA%8C%E7%AB%A0-%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/" class="title has-link-black-ter is-size-6 has-text-weight-normal">现代操作系统 第二章 进程与线程</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/%E4%BB%8E%E5%85%AC%E7%A5%AD%E6%97%A5%E5%90%84%E5%AE%B6%E8%A1%8C%E4%B8%BA%E7%9C%8B%E8%A8%80%E8%AE%BA%E8%87%AA%E7%94%B1%E5%92%8C%E8%87%AA%E6%88%91%E5%AE%A1%E6%9F%A5/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="从公祭日各家行为看言论自由和自我审查">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-04-05T14:31:13.000Z">2020-04-05</time></div>
+                    <a href="/%E4%BB%8E%E5%85%AC%E7%A5%AD%E6%97%A5%E5%90%84%E5%AE%B6%E8%A1%8C%E4%B8%BA%E7%9C%8B%E8%A8%80%E8%AE%BA%E8%87%AA%E7%94%B1%E5%92%8C%E8%87%AA%E6%88%91%E5%AE%A1%E6%9F%A5/" class="title has-link-black-ter is-size-6 has-text-weight-normal">从公祭日各家行为看言论自由和自我审查</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/%E9%97%B2%E8%81%8A/">闲聊</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%20%E7%AC%AC%E4%B8%80%E7%AB%A0%20%E5%BC%95%E8%AE%BA/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="现代操作系统 第一章 引论">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-09T03:38:28.000Z">2020-03-09</time></div>
+                    <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%20%E7%AC%AC%E4%B8%80%E7%AB%A0%20%E5%BC%95%E8%AE%BA/" class="title has-link-black-ter is-size-6 has-text-weight-normal">现代操作系统 第一章 引论</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            归档
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/08/">
+                <span class="level-start">
+                    <span class="level-item">八月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/07/">
+                <span class="level-start">
+                    <span class="level-item">七月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/05/">
+                <span class="level-start">
+                    <span class="level-item">五月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/04/">
+                <span class="level-start">
+                    <span class="level-item">四月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/03/">
+                <span class="level-start">
+                    <span class="level-item">三月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/02/">
+                <span class="level-start">
+                    <span class="level-item">二月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/01/">
+                <span class="level-start">
+                    <span class="level-item">一月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">6</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                标签
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+</div>
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.svg" alt="现代操作系统 第二章 进程与线程" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 zhengli233&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a>
+                
+                <br>
+                <span id="busuanzi_container_site_uv">
+                共<span id="busuanzi_value_site_uv">0</span>个访客
+                </span>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+
+<script>
+var IcarusThemeSettings = {
+    site: {
+        url: 'https://blog.houtiao.club',
+        external_link: {"enable":true,"exclude":[]}
+    },
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+
+
+<script src="/js/animation.js"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+
+
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+    <script src="https://cdn.jsdelivr.net/gh/zhengli233/live2d-widget/autoload.js"></script>
+</body>
+</html>

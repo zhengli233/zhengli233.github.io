@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 4.2.1" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>为网站添加ssl加密 - 猴调博客</title>
+
+
+    <meta name="description" content="使用浏览器浏览网页的时候，在地址栏的左边会有一个符号加锁的表示启用了ssl，查看完整url的话可以看到是以https:&#x2F;&#x2F;开头的，而显示not secure的则是以http：&#x2F;&#x2F;开头的。它们的区别在于，https传输的内容是加密的，而http则是以明文传输的，也就是说，如果有人在你的传输线路上抓包，走http包的内容别人可以一目了然，像username和password这种敏感信息，以及会暴露xp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="为网站添加ssl加密">
+<meta property="og:url" content="https://blog.houtiao.club/%E4%B8%BA%E7%BD%91%E7%AB%99%E6%B7%BB%E5%8A%A0ssl%E5%8A%A0%E5%AF%86/index.html">
+<meta property="og:site_name" content="猴调博客">
+<meta property="og:description" content="使用浏览器浏览网页的时候，在地址栏的左边会有一个符号加锁的表示启用了ssl，查看完整url的话可以看到是以https:&#x2F;&#x2F;开头的，而显示not secure的则是以http：&#x2F;&#x2F;开头的。它们的区别在于，https传输的内容是加密的，而http则是以明文传输的，也就是说，如果有人在你的传输线路上抓包，走http包的内容别人可以一目了然，像username和password这种敏感信息，以及会暴露xp">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.houtiao.club/images/%E4%B8%BA%E7%BD%91%E7%AB%99%E6%B7%BB%E5%8A%A0ssl%E5%8A%A0%E5%AF%86/http-to-https.png">
+<meta property="article:published_time" content="2020-01-21T07:40:22.000Z">
+<meta property="article:modified_time" content="2020-08-02T07:44:36.999Z">
+<meta property="article:author" content="zhengli233">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.houtiao.club/images/%E4%B8%BA%E7%BD%91%E7%AB%99%E6%B7%BB%E5%8A%A0ssl%E5%8A%A0%E5%AF%86/http-to-https.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.svg">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-156168277-2"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-156168277-2');
+</script>
+
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.svg" alt="为网站添加ssl加密" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">Home</a>
+                
+                <a class="navbar-item"
+                href="/archives">Archives</a>
+                
+                <a class="navbar-item"
+                href="/categories">Categories</a>
+                
+                <a class="navbar-item"
+                href="/tags">Tags</a>
+                
+                <a class="navbar-item"
+                href="/about">About</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    <a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                <a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-image">
+        <span  class="image is-7by1">
+            <img class="thumbnail" src="/images/%E4%B8%BA%E7%BD%91%E7%AB%99%E6%B7%BB%E5%8A%A0ssl%E5%8A%A0%E5%AF%86/http-to-https.png" alt="为网站添加ssl加密">
+        </span>
+    </div>
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-01-21T07:40:22.000Z">2020-01-21</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/%E7%BD%91%E7%BB%9C/">网络</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    11 分钟 读完 (大约 1671 个字)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                为网站添加ssl加密
+            
+        </h1>
+        <div class="content">
+            <p>使用浏览器浏览网页的时候，在地址栏的左边会有一个符号<br><img src="/images/%E4%B8%BA%E7%BD%91%E7%AB%99%E6%B7%BB%E5%8A%A0ssl%E5%8A%A0%E5%AF%86/%E5%8A%A0%E5%AF%86.png" alt=""><br><img src="/images/%E4%B8%BA%E7%BD%91%E7%AB%99%E6%B7%BB%E5%8A%A0ssl%E5%8A%A0%E5%AF%86/%E6%9C%AA%E5%8A%A0%E5%AF%86.png" alt=""><br>加锁的表示启用了ssl，查看完整url的话可以看到是以<code>https://</code>开头的，而显示<code>not secure</code>的则是以<code>http：//</code>开头的。<br>它们的区别在于，<code>https</code>传输的内容是加密的，而<code>http</code>则是以明文传输的，也就是说，如果有人在你的传输线路上抓包，走<code>http</code>包的内容别人可以一目了然，像<code>username</code>和<code>password</code>这种敏感信息，以及会暴露xp的搜索内容，也许就会被有心之人所利用。有兴趣的可以搜索一下中间人攻击，在这里就不展开讲了。<br>现代的浏览器对于不加密的网址，往往都会给出提示。像firefox会弹出悬窗提示你该网站安全等级较低，chrome做的更绝，直接把页面block，除非你选择高级选项继续访问.<br>对于搜索引擎排名优化而言，<code>https</code>的排名应该更有优势，至少谷歌是这样的。百度在早些年对<code>https</code>并不是很友好，甚至建议站长们提供<code>http</code>页面供它爬取. <a href="http://www.chinaz.com/web/2014/0916/367881.shtml">(source)</a></p>
+<a id="more"></a>
+
+<p>另外, 未加密的访问有可能遭到运营商的劫持。劫持的后果就是在你浏览的网页中, 加入它们的广告.<br>劫持分为2种, DNS劫持和http劫持.<br>DNS劫持可以理解为用户的请求去往了错误的DNS服务器进行查询解析，返回来的目的主机IP是运营商的中间服务器IP，访问该服务器会一致性的返回302，让用户浏览器跳转到预处理好的带广告的网页，在该网页中再通过 iframe 打开用户原来访问的地址。<br>http劫持指在运营商的路由器节点上，使用旁路设备设置协议检测，一旦发现是HTTP请求，而且是html类型请求，则拦截处理。后续做法往往分为2种，1种是返回302让用户浏览器跳转到另外的地址，还有1种是在服务器返回的HTM 数据中插入js或dom节点（广告），浏览器收到302代码后就会跳转到错误的地址，或者修改了的HTML有广告，随后返回的真正数据到达后反而会被丢弃。<a href="https://youngzhang08.github.io/2018/09/05/%E8%BF%90%E8%90%A5%E5%95%86%E5%8A%AB%E6%8C%81/">参考</a></p>
+<p>加密的好处大概就是以上这些，坏处就是加大了客户端和服务端的工作量，客户端会花更多的时间打开网页，服务端则会花费更多的资源去加解密。而且虽然加密了，但却不是完全无懈可击的，如果根证书就错了，那信任链整个就错了。</p>
+<p>说了这么多，到底怎么给自己网站启用<code>https</code>呢。下面我说说我们的猴调网是怎么启用的。<br>最开始，猴调网使用的是<code>http</code>，并且连域名都没有，访问是靠直接输ip的。在服务器端，nginx也只设置了默认80端口的服务器。要想使用ssl加密，就必须拥有一个证书，这个证书是受信任的机构颁发给你的。网上有很多攻略，比如<a href="https://diamondfsd.com/lets-encrytp-hand-https/">从let’s encrypt获取免费的证书</a>。但是，使用它的前提是，你有一个域名，不能一个裸的ip。<br>那么，买个域名吧。在杭州的老马，深圳的老马和北京的老李之间，我最终选择了给深圳的老马一个坐公交车的机会。腾讯云的<code>.club</code>域名一块钱一年，跟白送差不多。另外，域名证书也能免费提供，所以直接用它的就行了。<br>在下载它的证书之前，要先讲一下猴调网哪里需要用到这个证书。<br>现在的猴调网的前端，不再是放在aws的服务器上了，我托管给了coding page，因为国内访问新加坡的服务器实在是又慢又不稳定。coding page上的域名可以绑定为<code>www.houtiao.club</code>以及<code>houtiao.club</code>这个主域名，让腾讯云解析到coding page原来的域名就可以了。并且，可以在coding page上直接设置为强制https访问，这是不需要我提供证书的，因为coding自己有。此时直接打开猴调网主页，就已经可以看到是ssl加密过的了。<br>但是，当猴调网去调用后端api时，问题来了，后端并没有做ssl加密。这种情况下会产生两种后果，一是请求后端api的子页面不再被认定为是加密的了，另一种是chrome阻止了未加密的请求。这两种情况我都遇到了，无论那种，都不是我们想要的。所以，后端的api请求也必须使用<code>https</code>。<br>之前没有申请域名走<code>http</code>的时候，我将后端的api接口直接暴露在公网上，前端只需要访问公网ip和端口就行了，这个后端是使用gunicorn部署的。<br>这里，我改变了之前的做法。我没有再使用暴露在公网的api接口，而是使用了Nginx的反向代理，将公网api请求转发给内网的gunicorn端口，这样就将ssl加密的工作交给了Nginx。我们只需要在Nginx的服务器配置文件中配置监听443端口(https请求的默认端口)，启用ssl加密，并指定证书的路径。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line"></span><br><span class="line">  listen 443 ssl;</span><br><span class="line"></span><br><span class="line">  server_name api.houtiao.club;</span><br><span class="line"></span><br><span class="line">  ssl_certificate &#x2F;home&#x2F;ubuntu&#x2F;upload&#x2F;cert&#x2F;Nginx&#x2F;1_api.houtiao.club_bundle.crt;</span><br><span class="line">  ssl_certificate_key &#x2F;home&#x2F;ubuntu&#x2F;upload&#x2F;cert&#x2F;Nginx&#x2F;2_api.houtiao.club.key;</span><br><span class="line">  ssl_session_cache shared:SSL:1m;</span><br><span class="line">  ssl_session_timeout 5m;</span><br><span class="line">  ssl_ciphers HIGH:!aNULL:!MD5;</span><br><span class="line">  ssl_prefer_server_ciphers on;</span><br><span class="line"></span><br><span class="line">  location &#x2F; &#123;</span><br><span class="line">    proxy_pass http:&#x2F;&#x2F;127.0.0.1:8000&#x2F;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样，后端的代码就不需要做更改，前端的请求也使用了ssl加密。<br>至此，猴调网就全面启用了<code>https</code>。</p>
+
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/%E6%9C%80%E8%BF%91%E6%A2%AF%E5%AD%90%E5%BE%88%E4%B8%8D%E7%A8%B3%E5%AE%9A%E5%95%8A/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">最近梯子很不稳定啊</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/%E6%B2%A1%E6%83%B3%E5%88%B0%E7%9C%9F%E7%9A%84%E4%BC%9A%E9%81%87%E5%88%B0%E8%A6%81%E6%B1%82%E5%88%AB%E4%BA%BA%E8%AE%A9%E5%BA%A7%E7%9A%84%E8%80%81%E4%BA%BA/">
+                <span class="level-item">没想到真的会遇到要求别人让座的老人</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">评论</h3>
+        
+<div id="valine-thread" class="content"></div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js"></script>
+<script>
+    new Valine({
+        el: '#valine-thread' ,
+        notify: false,
+        verify: false,
+        app_id: 'OnRDO7gRhbtbQ5ovEj1BYsX4-gzGzoHsz',
+        app_key: '69CP8k1lxR4mAVQA4MT0ifB2',
+        placeholder: '发一个猴调的评论吧'
+    });
+</script>
+
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/gt_potter.jpg" alt="zhengli233">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        zhengli233
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        Coder
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>Shenzhen China</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <a href="/archives">
+                        <p class="title has-text-weight-normal">
+                            13
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        分类
+                    </p>
+                    <a href="/categories">
+                        <p class="title has-text-weight-normal">
+                            6
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        标签
+                    </p>
+                    <a href="/tags">
+                        <p class="title has-text-weight-normal">
+                            0
+                        </p>
+                    </a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/zhengli233" target="_blank" rel="noopener">
+                关注我</a>
+        </div>
+        
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank" rel="noopener"
+                title="Github" href="https://github.com/zhengli233">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            链接
+        </h3>
+        <ul class="menu-list">
+        
+            <li>
+                <a class="level is-mobile" href="https://www.houtiao.club/" target="_blank" rel="noopener">
+                    <span class="level-left">
+                        <span class="level-item">猴调网</span>
+                    </span>
+                    <span class="level-right">
+                        <span class="level-item tag">www.houtiao.club</span>
+                    </span>
+                </a>
+            </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                分类
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/C/">
+            <span class="level-start">
+                <span class="level-item">C++</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Git/">
+            <span class="level-start">
+                <span class="level-item">Git</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">
+            <span class="level-start">
+                <span class="level-item">操作系统</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">3</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/%E7%BD%91%E7%BB%9C/">
+            <span class="level-start">
+                <span class="level-item">网络</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">3</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/%E9%97%B2%E8%81%8A/">
+            <span class="level-start">
+                <span class="level-item">闲聊</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">4</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/%E9%B8%A1%E6%B1%A4/">
+            <span class="level-start">
+                <span class="level-item">鸡汤</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+            <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/%E4%BD%BF%E7%94%A8CMake%E6%90%AD%E5%BB%BAC-%E9%A1%B9%E7%9B%AE/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="使用CMake搭建C++项目">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-08-02T08:12:26.000Z">2020-08-02</time></div>
+                    <a href="/%E4%BD%BF%E7%94%A8CMake%E6%90%AD%E5%BB%BAC-%E9%A1%B9%E7%9B%AE/" class="title has-link-black-ter is-size-6 has-text-weight-normal">使用CMake搭建C++项目</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/C/">C++</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/Windows%E4%B8%8BQt%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%B8%B2%E5%8F%A3%E9%80%9A%E4%BF%A1%E7%9A%84/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Windows下Qt是如何实现串口通信的">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-07-13T02:15:39.000Z">2020-07-13</time></div>
+                    <a href="/Windows%E4%B8%8BQt%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%B8%B2%E5%8F%A3%E9%80%9A%E4%BF%A1%E7%9A%84/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Windows下Qt是如何实现串口通信的</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%AC%E4%BA%8C%E7%AB%A0-%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="现代操作系统 第二章 进程与线程">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-05-26T07:47:13.000Z">2020-05-26</time></div>
+                    <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%AC%E4%BA%8C%E7%AB%A0-%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/" class="title has-link-black-ter is-size-6 has-text-weight-normal">现代操作系统 第二章 进程与线程</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/%E4%BB%8E%E5%85%AC%E7%A5%AD%E6%97%A5%E5%90%84%E5%AE%B6%E8%A1%8C%E4%B8%BA%E7%9C%8B%E8%A8%80%E8%AE%BA%E8%87%AA%E7%94%B1%E5%92%8C%E8%87%AA%E6%88%91%E5%AE%A1%E6%9F%A5/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="从公祭日各家行为看言论自由和自我审查">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-04-05T14:31:13.000Z">2020-04-05</time></div>
+                    <a href="/%E4%BB%8E%E5%85%AC%E7%A5%AD%E6%97%A5%E5%90%84%E5%AE%B6%E8%A1%8C%E4%B8%BA%E7%9C%8B%E8%A8%80%E8%AE%BA%E8%87%AA%E7%94%B1%E5%92%8C%E8%87%AA%E6%88%91%E5%AE%A1%E6%9F%A5/" class="title has-link-black-ter is-size-6 has-text-weight-normal">从公祭日各家行为看言论自由和自我审查</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/%E9%97%B2%E8%81%8A/">闲聊</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%20%E7%AC%AC%E4%B8%80%E7%AB%A0%20%E5%BC%95%E8%AE%BA/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="现代操作系统 第一章 引论">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-09T03:38:28.000Z">2020-03-09</time></div>
+                    <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%20%E7%AC%AC%E4%B8%80%E7%AB%A0%20%E5%BC%95%E8%AE%BA/" class="title has-link-black-ter is-size-6 has-text-weight-normal">现代操作系统 第一章 引论</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            归档
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/08/">
+                <span class="level-start">
+                    <span class="level-item">八月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/07/">
+                <span class="level-start">
+                    <span class="level-item">七月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/05/">
+                <span class="level-start">
+                    <span class="level-item">五月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/04/">
+                <span class="level-start">
+                    <span class="level-item">四月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/03/">
+                <span class="level-start">
+                    <span class="level-item">三月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/02/">
+                <span class="level-start">
+                    <span class="level-item">二月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/01/">
+                <span class="level-start">
+                    <span class="level-item">一月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">6</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                标签
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+            </div>
+        </div>
+    </div>
+</div>
+        
+        </div>
+    
+</div>
+
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only has-order-3 column-right ">
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/%E4%BD%BF%E7%94%A8CMake%E6%90%AD%E5%BB%BAC-%E9%A1%B9%E7%9B%AE/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="使用CMake搭建C++项目">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-08-02T08:12:26.000Z">2020-08-02</time></div>
+                    <a href="/%E4%BD%BF%E7%94%A8CMake%E6%90%AD%E5%BB%BAC-%E9%A1%B9%E7%9B%AE/" class="title has-link-black-ter is-size-6 has-text-weight-normal">使用CMake搭建C++项目</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/C/">C++</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/Windows%E4%B8%8BQt%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%B8%B2%E5%8F%A3%E9%80%9A%E4%BF%A1%E7%9A%84/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Windows下Qt是如何实现串口通信的">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-07-13T02:15:39.000Z">2020-07-13</time></div>
+                    <a href="/Windows%E4%B8%8BQt%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%B8%B2%E5%8F%A3%E9%80%9A%E4%BF%A1%E7%9A%84/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Windows下Qt是如何实现串口通信的</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%AC%E4%BA%8C%E7%AB%A0-%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="现代操作系统 第二章 进程与线程">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-05-26T07:47:13.000Z">2020-05-26</time></div>
+                    <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%AC%E4%BA%8C%E7%AB%A0-%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/" class="title has-link-black-ter is-size-6 has-text-weight-normal">现代操作系统 第二章 进程与线程</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/%E4%BB%8E%E5%85%AC%E7%A5%AD%E6%97%A5%E5%90%84%E5%AE%B6%E8%A1%8C%E4%B8%BA%E7%9C%8B%E8%A8%80%E8%AE%BA%E8%87%AA%E7%94%B1%E5%92%8C%E8%87%AA%E6%88%91%E5%AE%A1%E6%9F%A5/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="从公祭日各家行为看言论自由和自我审查">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-04-05T14:31:13.000Z">2020-04-05</time></div>
+                    <a href="/%E4%BB%8E%E5%85%AC%E7%A5%AD%E6%97%A5%E5%90%84%E5%AE%B6%E8%A1%8C%E4%B8%BA%E7%9C%8B%E8%A8%80%E8%AE%BA%E8%87%AA%E7%94%B1%E5%92%8C%E8%87%AA%E6%88%91%E5%AE%A1%E6%9F%A5/" class="title has-link-black-ter is-size-6 has-text-weight-normal">从公祭日各家行为看言论自由和自我审查</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/%E9%97%B2%E8%81%8A/">闲聊</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%20%E7%AC%AC%E4%B8%80%E7%AB%A0%20%E5%BC%95%E8%AE%BA/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="现代操作系统 第一章 引论">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-09T03:38:28.000Z">2020-03-09</time></div>
+                    <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%20%E7%AC%AC%E4%B8%80%E7%AB%A0%20%E5%BC%95%E8%AE%BA/" class="title has-link-black-ter is-size-6 has-text-weight-normal">现代操作系统 第一章 引论</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            归档
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/08/">
+                <span class="level-start">
+                    <span class="level-item">八月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/07/">
+                <span class="level-start">
+                    <span class="level-item">七月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/05/">
+                <span class="level-start">
+                    <span class="level-item">五月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/04/">
+                <span class="level-start">
+                    <span class="level-item">四月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/03/">
+                <span class="level-start">
+                    <span class="level-item">三月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/02/">
+                <span class="level-start">
+                    <span class="level-item">二月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/01/">
+                <span class="level-start">
+                    <span class="level-item">一月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">6</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                标签
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+</div>
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.svg" alt="为网站添加ssl加密" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 zhengli233&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a>
+                
+                <br>
+                <span id="busuanzi_container_site_uv">
+                共<span id="busuanzi_value_site_uv">0</span>个访客
+                </span>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+
+<script>
+var IcarusThemeSettings = {
+    site: {
+        url: 'https://blog.houtiao.club',
+        external_link: {"enable":true,"exclude":[]}
+    },
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+
+
+<script src="/js/animation.js"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+
+
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+    <script src="https://cdn.jsdelivr.net/gh/zhengli233/live2d-widget/autoload.js"></script>
+</body>
+</html>
