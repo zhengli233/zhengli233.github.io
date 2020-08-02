@@ -19,7 +19,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://blog.houtiao.club/images/og_image.png">
 <meta property="article:published_time" content="2020-08-02T08:12:26.000Z">
-<meta property="article:modified_time" content="2020-08-02T09:38:13.442Z">
+<meta property="article:modified_time" content="2020-08-02T09:51:13.722Z">
 <meta property="article:author" content="zhengli233">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://blog.houtiao.club/images/og_image.png">
@@ -158,7 +158,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    10 分钟 读完 (大约 1533 个字)
+                    10 分钟 读完 (大约 1534 个字)
                 </span>
                 
                 
@@ -176,7 +176,10 @@
             
         </h1>
         <div class="content">
-            <h3 id="CMake是什么"><a href="#CMake是什么" class="headerlink" title="CMake是什么"></a>CMake是什么</h3><p>官网<a href="https://cmake.org">cmake.org</a>是这么描述的：<br>CMake is an open-source, cross-platform family of tools designed to build, test and package software. CMake is used to control the software compilation process using simple platform and compiler independent configuration files, and generate native makefiles and workspaces that can be used in the compiler environment of your choice. The suite of CMake tools were created by Kitware in response to the need for a powerful, cross-platform build environment for open-source projects such as ITK and VTK.<br>翻译过来就是：<br>CMake是开源、跨平台工具家族的一员，用来生成、测试和打包软件。CMake通过使用简易的平台和独立于编译器的配置文件，根据你的选择来生成编译环境需要的原生的makefile和workspace，并以此控制软件的编译过程。CMake套件由KitWare打造，满足了开源项目如ITK和VTK对一款强大的、跨平台的构建环境的需求。</p>
+            <h3 id="CMake是什么"><a href="#CMake是什么" class="headerlink" title="CMake是什么"></a>CMake是什么</h3><p>官网<a href="https://cmake.org">cmake.org</a>是这么描述的：<br>CMake is an open-source, cross-platform family of tools designed to build, test and package software. CMake is used to control the software compilation process using simple platform and compiler independent configuration files, and generate native makefiles and workspaces that can be used in the compiler environment of your choice. The suite of CMake tools were created by Kitware in response to the need for a powerful, cross-platform build environment for open-source projects such as ITK and VTK.</p>
+<a id="more"></a>
+
+<p>翻译过来就是：<br>CMake是开源、跨平台工具家族的一员，用来生成、测试和打包软件。CMake通过使用简易的平台和独立于编译器的配置文件，根据你的选择来生成编译环境需要的原生的makefile和workspace，并以此控制软件的编译过程。CMake套件由KitWare打造，满足了开源项目如ITK和VTK对一款强大的、跨平台的构建环境的需求。</p>
 <p>简单来说，CMake就是一款开源且跨平台的编译环境构造工具，我们可以用它为自己的C++项目编写项目配置文件，并在不同的平台，如Windows、Mac和Linux，生成所需的编译配置和环境。</p>
 <h3 id="为什么要用CMake"><a href="#为什么要用CMake" class="headerlink" title="为什么要用CMake"></a>为什么要用CMake</h3><p>C/C++项目的编译过程大体分为2步，编译和链接。编译就是将源文件生成目标文件，链接就是将源文件中的引用部分转换成目标文件中实际实现的地址（这里实际简略了一些步骤，我没有展开）。CMake的配置文件CMakeLists.txt里面就规定了源文件（对应第一步）和所需的第三方头文件和库文件（对应第二步）。<br>这里大家可能就看出来了，CMake实际上做了Visual Studio的项目文件（Windows下）和makefile（unix下）的工作。没错，CMake会根据你的平台生成对应的文件，这样我们就只需要维护一份项目配置文件就可以做到多平台通用了。</p>
 <p>在我个人经历的团队合作项目中，Visual Studio的项目配置文件总会在分支合并时遇到冲突，这通常是因为不同开发者本地路径不同导致的。即使使用了相对路径，也不能完全避免冲突，这就很令人抓狂。<br>而CMakeLists作为通用的项目配置文件，使用<code>find_package</code>来配置第三方库可以有效避免路径带来的冲突问题，并且环境配置一目了然，赏心悦目。</p>
