@@ -143,6 +143,59 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-01-17T02:00:25.000Z">2020-01-17</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/Git/">Git</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    2 分钟 读完 (大约 269 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/%E5%B0%86%E4%BB%96%E4%BA%BA%E7%9A%84%E4%BB%A3%E7%A0%81%E4%BB%93%E5%BA%93%E6%B7%BB%E5%8A%A0%E5%88%B0%E8%87%AA%E5%B7%B1%E7%9A%84%E4%BB%A3%E7%A0%81%E4%BB%93%E5%BA%93%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E9%97%AE%E9%A2%98/">将他人的代码仓库添加到自己的代码仓库需要注意的问题</a>
+            
+        </h1>
+        <div class="content">
+            <p>这个问题是我在博客的框架hexo添加theme时遇到的。<br>在hexo中添加theme一般是将别人做好的theme repo clone到自己本地的themes文件夹内。但是当你使用git clone时，一块下载下来的还有theme repo中的git文件。这就导致如果你自己博客本身也是一个git repo的话，你无法将这个theme纳入自己的git版本控制中。也就是说，这个theme其实相当于被忽略了。如果你尝试git add并push的话，你只会在远端对应分支看到一个空的文件夹。<br>解决的方法很简单。在你add和push前，删除theme中一块被clone下来的git文件，也就是<code>/.git</code>，<code>.gitignore</code>等与theme无关的文件就可以了。<br>对于已经上传了一个空文件夹的，笨办法就是删除git相关文件后，把theme挪出去传一次，再挪进来传一次就行了。</p>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/%E5%B0%86%E4%BB%96%E4%BA%BA%E7%9A%84%E4%BB%A3%E7%A0%81%E4%BB%93%E5%BA%93%E6%B7%BB%E5%8A%A0%E5%88%B0%E8%87%AA%E5%B7%B1%E7%9A%84%E4%BB%A3%E7%A0%81%E4%BB%93%E5%BA%93%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E9%97%AE%E9%A2%98/#more">阅读更多</a>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
                 <time class="level-item has-text-grey" datetime="2020-01-15T03:21:51.000Z">2020-01-15</time>
                 
                 <div class="level-item">
@@ -359,7 +412,7 @@
                     </p>
                     <a href="/archives">
                         <p class="title has-text-weight-normal">
-                            13
+                            14
                         </p>
                     </a>
                 </div>
@@ -476,7 +529,7 @@
                 <span class="level-item">网络</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">3</span>
+                <span class="level-item tag">4</span>
             </span>
         </a></li><li>
         <a class="level is-marginless" href="/categories/%E9%97%B2%E8%81%8A/">
@@ -510,6 +563,25 @@
         <h3 class="menu-label">
             最新文章
         </h3>
+        
+        <article class="media">
+            
+            <a href="/%E7%99%BD%E5%AB%96jsDelivr%E4%BD%9C%E4%B8%BA%E8%87%AA%E5%B7%B1%E7%BD%91%E7%AB%99%E7%9A%84cdn/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="白嫖jsDelivr作为自己网站的cdn">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-08-08T08:00:02.000Z">2020-08-08</time></div>
+                    <a href="/%E7%99%BD%E5%AB%96jsDelivr%E4%BD%9C%E4%B8%BA%E8%87%AA%E5%B7%B1%E7%BD%91%E7%AB%99%E7%9A%84cdn/" class="title has-link-black-ter is-size-6 has-text-weight-normal">白嫖jsDelivr作为自己网站的cdn</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/%E7%BD%91%E7%BB%9C/">网络</a>
+                    </p>
+                </div>
+            </div>
+        </article>
         
         <article class="media">
             
@@ -587,25 +659,6 @@
             </div>
         </article>
         
-        <article class="media">
-            
-            <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%20%E7%AC%AC%E4%B8%80%E7%AB%A0%20%E5%BC%95%E8%AE%BA/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/thumbnail.svg" alt="现代操作系统 第一章 引论">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-09T03:38:28.000Z">2020-03-09</time></div>
-                    <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%20%E7%AC%AC%E4%B8%80%E7%AB%A0%20%E5%BC%95%E8%AE%BA/" class="title has-link-black-ter is-size-6 has-text-weight-normal">现代操作系统 第一章 引论</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
     </div>
 </div>
         
@@ -623,7 +676,7 @@
                     <span class="level-item">八月 2020</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">1</span>
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -731,6 +784,25 @@
         
         <article class="media">
             
+            <a href="/%E7%99%BD%E5%AB%96jsDelivr%E4%BD%9C%E4%B8%BA%E8%87%AA%E5%B7%B1%E7%BD%91%E7%AB%99%E7%9A%84cdn/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="白嫖jsDelivr作为自己网站的cdn">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-08-08T08:00:02.000Z">2020-08-08</time></div>
+                    <a href="/%E7%99%BD%E5%AB%96jsDelivr%E4%BD%9C%E4%B8%BA%E8%87%AA%E5%B7%B1%E7%BD%91%E7%AB%99%E7%9A%84cdn/" class="title has-link-black-ter is-size-6 has-text-weight-normal">白嫖jsDelivr作为自己网站的cdn</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/%E7%BD%91%E7%BB%9C/">网络</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/%E4%BD%BF%E7%94%A8CMake%E6%90%AD%E5%BB%BAC-%E9%A1%B9%E7%9B%AE/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/images/thumbnail.svg" alt="使用CMake搭建C++项目">
@@ -805,25 +877,6 @@
             </div>
         </article>
         
-        <article class="media">
-            
-            <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%20%E7%AC%AC%E4%B8%80%E7%AB%A0%20%E5%BC%95%E8%AE%BA/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/thumbnail.svg" alt="现代操作系统 第一章 引论">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-09T03:38:28.000Z">2020-03-09</time></div>
-                    <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%20%E7%AC%AC%E4%B8%80%E7%AB%A0%20%E5%BC%95%E8%AE%BA/" class="title has-link-black-ter is-size-6 has-text-weight-normal">现代操作系统 第一章 引论</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
     </div>
 </div>
     
@@ -841,7 +894,7 @@
                     <span class="level-item">八月 2020</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">1</span>
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>

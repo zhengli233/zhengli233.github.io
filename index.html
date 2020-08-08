@@ -143,6 +143,56 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-08-08T08:00:02.000Z">2020-08-08</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/%E7%BD%91%E7%BB%9C/">网络</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    6 分钟 读完 (大约 881 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/%E7%99%BD%E5%AB%96jsDelivr%E4%BD%9C%E4%B8%BA%E8%87%AA%E5%B7%B1%E7%BD%91%E7%AB%99%E7%9A%84cdn/">白嫖jsDelivr作为自己网站的cdn</a>
+            
+        </h1>
+        <div class="content">
+            <p>jsDelivr是一个免费的，为开源代码提供内容分发服务的服务商。<br>官网上它自己的描述是：<br><img src="/images/%E7%99%BD%E5%AB%96jsDelivr%E4%BD%9C%E4%B8%BA%E8%87%AA%E5%B7%B1%E7%BD%91%E7%AB%99%E7%9A%84cdn/%E6%8F%8F%E8%BF%B0.png" alt=""><br>所谓cdn，就是Content Delivery Network内容分发网络的缩写。它的主要功能是，将你提供的内容缓存在服务商提供的不同的服务器中，就好像物流的存储仓库一样，深圳生产的手机，原厂有库存，北京的仓库有库存，广州的顾客下订单就从深圳走，天津的顾客下订单就从北京的仓库走。好处显而易见，快的同时还分担了流量的压力。<br>通常来说，cdn服务商会根据流量或者缓存大小等收取费用，如果我们只是凭借自己的兴趣搭了个小网站，肯定能白嫖尽量白嫖啊。所以，免费的jsDelivr是非常合适的选择。<br>那么，怎么使用呢？<br>jsDelivr不需要你上传任何内容，它天然提供对npm，github和wordpress上开源资源的内容分发。<br>以大家比较熟悉的github举例，假设你有一组图片需要使用jsDelivr的加速，你需要在github上创建一个public的repo，将你的图片上传。当你的网站中需要这张图片时，使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;gh&#x2F;$&#123;user&#125;&#x2F;$&#123;repo&#125;@$&#123;branch&#125;&#x2F;$&#123;file&#125;</span><br></pre></td></tr></table></figure>
+<p>就可以享受到加速了。其中<code>${user}</code>是你的github用户名，<code>${repo}</code>是你的项目名，<code>${branch}</code>是项目分支的名字，如果使用项目的Release包，就填Release的版本号，<code>${file}</code>就是这个repo下的文件名了。<br>首次使用十分便利，立竿见影。但需要注意的是，如果你想修改文件内容，虽然图片一般不会修改，但有时我们加速的不是图片，而是js代码，当代码修改，即使推送到了github上的相应分支，jsDelivr也不会即使更新它的缓存，目前，官网也没有提供清空或者更新缓存的接口，查阅网上的资料，大多都说是随缘更新。我看到有人说将分支名称改为<code>latest</code>可以做到及时更新，实测下来并不可以。如果使用的是Release包，这个问题会小些，因为改变文件内容意味着必须发布一个新的Release版本，引用相应文件的地址也必须改变。<br>加速npm包与加速github上的文件类似，使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;$&#123;package&#125;@$&#123;version&#125;&#x2F;$&#123;file&#125;</span><br></pre></td></tr></table></figure>
+<p>其中<code>${package}</code>是在npm上的包名，<code>${version}</code>是版本号，<code>${file}</code>就是包内的文件了。<br>发布npm包其实比创建github上的项目还要简单，首先登陆npm的官网注册一个账号，并通过邮箱验证。然后在已经安装过npm情况下，通过<code>npm login</code>登陆，使用<code>npm init</code>创建包的配置文件，包括包名，版本，描述，作者，邮箱等，最后使用<code>npm publish</code>就可以将该路径下的文件打包发布了。<br>作为白嫖的cdn，除了更新缓存存在缺陷外，已经挑不出什么毛病了。祝你使用愉快。</p>
+
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
                 <time class="level-item has-text-grey" datetime="2020-08-02T08:12:26.000Z">2020-08-02</time>
                 
                 <div class="level-item">
@@ -618,59 +668,6 @@
 
 
 
-    
-<div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2020-01-17T02:00:25.000Z">2020-01-17</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/Git/">Git</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    2 分钟 读完 (大约 269 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/%E5%B0%86%E4%BB%96%E4%BA%BA%E7%9A%84%E4%BB%A3%E7%A0%81%E4%BB%93%E5%BA%93%E6%B7%BB%E5%8A%A0%E5%88%B0%E8%87%AA%E5%B7%B1%E7%9A%84%E4%BB%A3%E7%A0%81%E4%BB%93%E5%BA%93%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E9%97%AE%E9%A2%98/">将他人的代码仓库添加到自己的代码仓库需要注意的问题</a>
-            
-        </h1>
-        <div class="content">
-            <p>这个问题是我在博客的框架hexo添加theme时遇到的。<br>在hexo中添加theme一般是将别人做好的theme repo clone到自己本地的themes文件夹内。但是当你使用git clone时，一块下载下来的还有theme repo中的git文件。这就导致如果你自己博客本身也是一个git repo的话，你无法将这个theme纳入自己的git版本控制中。也就是说，这个theme其实相当于被忽略了。如果你尝试git add并push的话，你只会在远端对应分支看到一个空的文件夹。<br>解决的方法很简单。在你add和push前，删除theme中一块被clone下来的git文件，也就是<code>/.git</code>，<code>.gitignore</code>等与theme无关的文件就可以了。<br>对于已经上传了一个空文件夹的，笨办法就是删除git相关文件后，把theme挪出去传一次，再挪进来传一次就行了。</p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/%E5%B0%86%E4%BB%96%E4%BA%BA%E7%9A%84%E4%BB%A3%E7%A0%81%E4%BB%93%E5%BA%93%E6%B7%BB%E5%8A%A0%E5%88%B0%E8%87%AA%E5%B7%B1%E7%9A%84%E4%BB%A3%E7%A0%81%E4%BB%93%E5%BA%93%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E9%97%AE%E9%A2%98/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
 
     
 <div class="card card-transparent">
@@ -735,7 +732,7 @@
                     </p>
                     <a href="/archives">
                         <p class="title has-text-weight-normal">
-                            13
+                            14
                         </p>
                     </a>
                 </div>
@@ -852,7 +849,7 @@
                 <span class="level-item">网络</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">3</span>
+                <span class="level-item tag">4</span>
             </span>
         </a></li><li>
         <a class="level is-marginless" href="/categories/%E9%97%B2%E8%81%8A/">
@@ -886,6 +883,25 @@
         <h3 class="menu-label">
             最新文章
         </h3>
+        
+        <article class="media">
+            
+            <a href="/%E7%99%BD%E5%AB%96jsDelivr%E4%BD%9C%E4%B8%BA%E8%87%AA%E5%B7%B1%E7%BD%91%E7%AB%99%E7%9A%84cdn/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="白嫖jsDelivr作为自己网站的cdn">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-08-08T08:00:02.000Z">2020-08-08</time></div>
+                    <a href="/%E7%99%BD%E5%AB%96jsDelivr%E4%BD%9C%E4%B8%BA%E8%87%AA%E5%B7%B1%E7%BD%91%E7%AB%99%E7%9A%84cdn/" class="title has-link-black-ter is-size-6 has-text-weight-normal">白嫖jsDelivr作为自己网站的cdn</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/%E7%BD%91%E7%BB%9C/">网络</a>
+                    </p>
+                </div>
+            </div>
+        </article>
         
         <article class="media">
             
@@ -963,25 +979,6 @@
             </div>
         </article>
         
-        <article class="media">
-            
-            <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%20%E7%AC%AC%E4%B8%80%E7%AB%A0%20%E5%BC%95%E8%AE%BA/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/thumbnail.svg" alt="现代操作系统 第一章 引论">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-09T03:38:28.000Z">2020-03-09</time></div>
-                    <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%20%E7%AC%AC%E4%B8%80%E7%AB%A0%20%E5%BC%95%E8%AE%BA/" class="title has-link-black-ter is-size-6 has-text-weight-normal">现代操作系统 第一章 引论</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
     </div>
 </div>
         
@@ -999,7 +996,7 @@
                     <span class="level-item">八月 2020</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">1</span>
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -1107,6 +1104,25 @@
         
         <article class="media">
             
+            <a href="/%E7%99%BD%E5%AB%96jsDelivr%E4%BD%9C%E4%B8%BA%E8%87%AA%E5%B7%B1%E7%BD%91%E7%AB%99%E7%9A%84cdn/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="白嫖jsDelivr作为自己网站的cdn">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-08-08T08:00:02.000Z">2020-08-08</time></div>
+                    <a href="/%E7%99%BD%E5%AB%96jsDelivr%E4%BD%9C%E4%B8%BA%E8%87%AA%E5%B7%B1%E7%BD%91%E7%AB%99%E7%9A%84cdn/" class="title has-link-black-ter is-size-6 has-text-weight-normal">白嫖jsDelivr作为自己网站的cdn</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/%E7%BD%91%E7%BB%9C/">网络</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/%E4%BD%BF%E7%94%A8CMake%E6%90%AD%E5%BB%BAC-%E9%A1%B9%E7%9B%AE/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/images/thumbnail.svg" alt="使用CMake搭建C++项目">
@@ -1181,25 +1197,6 @@
             </div>
         </article>
         
-        <article class="media">
-            
-            <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%20%E7%AC%AC%E4%B8%80%E7%AB%A0%20%E5%BC%95%E8%AE%BA/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/thumbnail.svg" alt="现代操作系统 第一章 引论">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-09T03:38:28.000Z">2020-03-09</time></div>
-                    <a href="/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%20%E7%AC%AC%E4%B8%80%E7%AB%A0%20%E5%BC%95%E8%AE%BA/" class="title has-link-black-ter is-size-6 has-text-weight-normal">现代操作系统 第一章 引论</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
     </div>
 </div>
     
@@ -1217,7 +1214,7 @@
                     <span class="level-item">八月 2020</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">1</span>
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
